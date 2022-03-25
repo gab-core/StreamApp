@@ -6,13 +6,6 @@
         <video id="remote-video" controls playsinline></video>
 
         <div id="network-warning">Your connection isn't fast enough to play this stream!</div>
-
-        <img
-            id="play_button"
-            src="./images/play.png"
-            @click="playWebRTCVideo"
-            style="position: absolute; top: 30px; left: 30px; display: none;"
-        />
     </div>
 </template>
 
@@ -38,13 +31,12 @@ export default {
         },
         streamURL: {
             type: String,
-            required: true, // 'ws(s)://my.stream.server.com:5080/WebRTCAppEE/websocket',
+            default: 'wss://stream.live.alogo.io:5443/WebRTCAppEE/websocket',
         },
     },
     methods: {
         hideWebRTCElements() {
             this.setWebRTCElementsVisibility(false)
-            document.getElementById('play_button').style.display = 'none'
         },
         setWebRTCElementsVisibility(show) {
             document.getElementById('remote-video').style.display = show == true ? 'block' : 'none'
@@ -61,12 +53,7 @@ export default {
                 document
                     .getElementById('remote-video')
                     .play()
-                    .then(function(value) {
-                        //autoplay started
-                        document.getElementById('play_button').style.display = 'none'
-                    })
                     .catch(function(error) {
-                        document.getElementById('play_button').style.display = 'block'
                         console.log('Error autoplay: ' + error)
                         console.log('User interaction needed to start playing')
                     })
@@ -134,10 +121,6 @@ export default {
                             console.log('Connecton closed: ' + JSON.stringify(description))
                         }
                     } else if (info == 'bitrateMeasurement') {
-                        if (!document.getElementById('remote-video').paused) {
-                            document.getElementById('play_button').style.display = 'none'
-                        }
-
                         console.debug(description)
                         if (description.audioBitrate + description.videoBitrate > description.targetBitrate) {
                             document.getElementById('network-warning').style.display = 'block'
